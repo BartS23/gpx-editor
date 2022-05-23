@@ -121,8 +121,6 @@ function initUI(gpxInput) {
 
 	$('#editor').show();
 
-
-
 	var points = parseGpx(gpxInput);
 	var segment = getSegment(points);
 	var map;
