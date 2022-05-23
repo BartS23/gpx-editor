@@ -58,6 +58,6 @@ function updateGpx(gpxData, segment) {
 	})
 	$trk.append($seg).append("\n");
 	$gpx.find('trk').replaceWith($trk);
-	
+
 	return XML_HEADER + $gpx.find('gpx')[0].outerHTML;
 }
