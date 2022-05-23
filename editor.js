@@ -75,7 +75,7 @@ function drawMap(elementId, segment) {
 
 	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 		attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-		maxZoom: 18
+		maxZoom: 19
 	}).addTo(map);
 
 	L.polyline(segment.filter(point => point.enabled).map(convertToLatLon), {
