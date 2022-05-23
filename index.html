@@ -3,14 +3,15 @@
 <meta charset="utf-8">
 <title>GPX editor</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-1.12.1/datatables.min.css">
 
-<script src="https://unpkg.com/leaflet@1.1.0/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
 
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script>google.charts.load('current', {packages: ['corechart', 'line']});</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/scroller/2.0.6/js/dataTables.scroller.min.js"></script>
 
 <section id="input" class="container">
     <label for="input-gpx">Upload GPX file (drag & drop or click & select):</label>
@@ -23,16 +24,26 @@
             <p>
                 <a class="btn btn-primary" download="generated.gpx" href="javascript:;" id="download-gpx">
                     Download GPX</a>
-                <a class="btn btn-default" href="">Back</a>
+                <a class="btn btn-secondary" href="">Back</a>
             </p>
-            <table id="split-table" class="table">
+            <div class="mb-3 row">
+                <label for="distance" class="col-sm-2 col-form-label">Distance</label>
+                <div class="col-sm-10">
+                    <input type="text" readonly class="form-control" id="distance">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="time" class="col-sm-2 col-form-label">Time</label>
+                <div class="col-sm-10">
+                    <input type="text" readonly class="form-control" id="time">
+                </div>
+            </div>
+            <table id="points-table" class="table">
                 <thead>
                 <tr>
-                    <th>Include</th>
-                    <th>Distance</th>
-                    <th>Time</th>
-                    <th>Max speed</th>
-                    <th>Avg speed</th>
+                    <th class="text-center">#</th>
+                    <th class="text-center">Include</th>
+                    <th class="text-center">Distance</th>
                 </tr>
                 </thead>
                 <tbody></tbody>
@@ -41,10 +52,6 @@
         <div class="right-column">
             <div id="lf-map"></div>
         </div>
-    </div>
-
-    <div class="container map-container">
-        <div id="g-chart"></div>
     </div>
 </section>
 
@@ -100,12 +107,6 @@
         overflow: hidden;
     }
 
-    #g-chart {
-        height: 380px;
-        margin: -50px -150px -50px -50px;
-        width: calc(100% + 200px);
-    }
-
     #lf-map .leaflet-tile {
         opacity: 1 !important;
     }
@@ -136,21 +137,7 @@
         vertical-align: middle !important;
     }
 
-    tr .marker {
-        border: 2px solid;
-        display: block;
-        height: 1em;
-        margin: 0 auto;
-        width: 1em;
-    }
-
-    tr.is-enabled .marker {
-        border: .5em solid;
-        height: 0;
-        width: 0;
-    }
-
-    tbody tr:hover, tr.is-selected {
+    tbody tr:hover {
         background: #eee;
     }
 

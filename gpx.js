@@ -13,7 +13,7 @@ function parseGpx(gpxData) {
 	}).get();
 }
 
-function updateGpx(gpxData, segments) {
+function updateGpx1(gpxData, segments) {
 	var $gpx = $($.parseXML(gpxData));
 
 	var $trk = $('<trk></trk>');
@@ -38,5 +38,26 @@ function updateGpx(gpxData, segments) {
 
 	$gpx.find('trk').replaceWith($trk);
 
+	return XML_HEADER + $gpx.find('gpx')[0].outerHTML;
+}
+
+function updateGpx(gpxData, segment) {
+	var $gpx = $($.parseXML(gpxData));
+
+	var $trk = $('<trk />').append("\n");
+	var $seg = $("<trkseg />").append("\n");
+	segment.filter(point => point.enabled).forEach(point => {
+		var $pt = $('<trkpt />').append("\n");
+		$pt.attr('lat', point.lat);
+		$pt.attr('lon', point.lon);
+		if (point.ele) {
+			$pt.append($("<ele />").text(point.ele)).append("\n");
+		}
+		$pt.append($('<time />').text(new Date(point.time * 1000).toISOString())).append("\n");
+		$seg.append($pt).append("\n");
+	})
+	$trk.append($seg).append("\n");
+	$gpx.find('trk').replaceWith($trk);
+	
 	return XML_HEADER + $gpx.find('gpx')[0].outerHTML;
 }
