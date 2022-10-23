@@ -45,51 +45,6 @@ function getSegment(pts) {
 	return segment;
 }
 
-function fitMap(map, segment) {
-	map.fitBounds([
-		[
-			Math.min.apply(Math, segment.map(function (pt) {
-				return pt.lat;
-			})),
-			Math.min.apply(Math, segment.map(function (pt) {
-				return pt.lon;
-			}))
-		],
-		[
-			Math.max.apply(Math, segment.map(function (pt) {
-				return pt.lat;
-			})),
-			Math.max.apply(Math, segment.map(function (pt) {
-				return pt.lon;
-			}))
-		]
-	]);
-}
-
-function convertToLatLon(pt) {
-	return [pt.lat, pt.lon];
-}
-
-function drawMap(elementId, segment, fitToMap) {
-	var map = L.map(elementId);
-
-	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-		attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-		maxZoom: 19
-	}).addTo(map);
-
-	L.polyline(segment.filter(point => point.enabled).map(convertToLatLon), {
-		color: '#e41a1c',
-		weight: 6
-	}).addTo(map);
-
-	if (fitToMap) {
-		fitMap(map, segment);
-	}
-
-	return map;
-}
-
 function drawPoints(elementId, segment) {
 	var $tbody = $('tbody', document.getElementById(elementId));
 	$tbody.html('');
@@ -112,6 +67,17 @@ function generateDataLink(data) {
 }
 
 function initUI(gpxInput) {
+	const map = L.map('lf-map');
+	L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+		maxZoom: 19
+	}).addTo(map);
+
+	const polyline = L.polyline([], {
+		color: '#e41a1c',
+		weight: 6
+	}).addTo(map);
+
 	$('#input').hide();
 	$('#points-table').DataTable({
 		paging: false,
@@ -125,7 +91,6 @@ function initUI(gpxInput) {
 
 	var points = parseGpx(gpxInput);
 	var segment = getSegment(points);
-	var map;
 
 	$('#download-gpx').on('click', function () {
 		$('#download-gpx').attr('href', generateDataLink(updateGpx(gpxInput, segment)));
@@ -134,14 +99,14 @@ function initUI(gpxInput) {
 	drawPoints("points-table", segment);
 
 	function refreshUi(fitToMap) {
-		if (map) {
-			map.remove();
-		}
-
 		jQuery("#distance").val(getDistance(segment).toFixed(0) + ' m');
 		jQuery("#time").val(getDuration(segment));
 
-		map = drawMap('lf-map', segment, fitToMap);
+		polyline.setLatLngs(segment.filter(point => point.enabled).map(p => [p.lat, p.lon]));
+
+		if (fitToMap) {
+			map.fitBounds(polyline.getBounds());
+		}
 	}
 
 	$('body').on('click', '[data-toggle-point]', function () {
@@ -163,4 +128,4 @@ $('#input-gpx').on('change', function (ev) {
 		initUI(reader.result);
 	};
 });
-//jQuery.ajax("Test.gpx").then( data => initUI(data));
+//jQuery.ajax("Test.gpx").then(data => initUI(data));
