@@ -27,22 +27,16 @@ function getDistance(segment) {
 }
 
 function getSegment(pts) {
-	var segment = [pts[0]];
-	segment[0].enabled = true;
-	var i = 0;
-	var j = 1;
-	var len = pts.length;
+	let segments = [];
+	let lastPoint;
+	pts.forEach(point => {
+		point.enabled = true;
+		point.distance = lastPoint ? calcDistance(lastPoint, point) : 0;
+		segments.push(point)
+		lastPoint = point;
+	})
 
-	for (; j < len; i += 1, j += 1) {
-		var pt1 = pts[i];
-		var pt2 = pts[j];
-		var distance = calcDistance(pt1, pt2);
-		pt2.distance = distance;
-		pt2.enabled = true;
-		segment.push(pt2);
-	}
-
-	return segment;
+	return segments;
 }
 
 function drawPoints(elementId, segment) {
