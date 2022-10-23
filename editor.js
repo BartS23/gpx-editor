@@ -70,7 +70,7 @@ function convertToLatLon(pt) {
 	return [pt.lat, pt.lon];
 }
 
-function drawMap(elementId, segment) {
+function drawMap(elementId, segment, fitToMap) {
 	var map = L.map(elementId);
 
 	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -83,7 +83,9 @@ function drawMap(elementId, segment) {
 		weight: 6
 	}).addTo(map);
 
-	fitMap(map, segment);
+	if (fit) {
+		fitMap(map, segment);
+	}
 
 	return map;
 }
@@ -131,7 +133,7 @@ function initUI(gpxInput) {
 
 	drawPoints("points-table", segment);
 
-	function refreshUi() {
+	function refreshUi(fitToMap) {
 		if (map) {
 			map.remove();
 		}
@@ -139,7 +141,7 @@ function initUI(gpxInput) {
 		jQuery("#distance").val(getDistance(segment).toFixed(0) + ' m');
 		jQuery("#time").val(getDuration(segment));
 
-		map = drawMap('lf-map', segment);
+		map = drawMap('lf-map', segment, fitToMap);
 	}
 
 	$('body').on('click', '[data-toggle-point]', function () {
@@ -147,10 +149,10 @@ function initUI(gpxInput) {
 		var pointId = $this.attr('data-segment-id');
 		segment[pointId].enabled = $this.find("input")[0].checked = !segment[pointId].enabled;
 
-		refreshUi();
+		refreshUi(false);
 	});
 
-	refreshUi();
+	refreshUi(true);
 }
 
 $('#input-gpx').on('change', function (ev) {
