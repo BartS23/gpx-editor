@@ -83,7 +83,7 @@ function drawMap(elementId, segment, fitToMap) {
 		weight: 6
 	}).addTo(map);
 
-	if (fit) {
+	if (fitToMap) {
 		fitMap(map, segment);
 	}
 
